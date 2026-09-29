@@ -7,7 +7,6 @@ to detect "person" and draw a bounding box.
 import cv2
 from ultralytics import YOLO
 
-# Model ek hi baar load hoga, file import hote hi (baar baar load karna slow hota)
 model = YOLO('yolov8n.pt')
 
 
@@ -22,7 +21,6 @@ def detect_person(frame):
     if len(boxes) == 0:
         return None
 
-    # Sabse pehla/best-confidence person box lo
     box = boxes[0]
     x1, y1, x2, y2 = map(int, box.xyxy[0])
 
@@ -31,13 +29,13 @@ def detect_person(frame):
 
 
 def run_webcam_loop():
-    """Live webcam loop — testing ke liye, terminal mein dikhega."""
+
     cap = cv2.VideoCapture(0)
 
     while True:
         ret, frame = cap.read()
         if not ret:
-            print("Camera se frame nahi mila")
+            print("No Frame detected From Camera")
             break
 
         person_crop = detect_person(frame)
@@ -45,11 +43,11 @@ def run_webcam_loop():
         if person_crop is not None:
             cv2.imshow("Person Crop", person_crop)
         else:
-            print("Koi person detect nahi hua")
+            print("No Person Detected")
 
         cv2.imshow("Webcam Feed", frame)
 
-        if cv2.waitKey(1) & 0xFF == ord('q'):  # 'q' dabao to band ho
+        if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
     cap.release()
