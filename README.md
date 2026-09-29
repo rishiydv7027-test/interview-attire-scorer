@@ -41,29 +41,39 @@ interview-attire-scorer/
 ### ✅ Step 1: Environment & Repo Setup
 - Created project folder structure (see above).
 - Each member sets up their own Python virtual environment:
-  ```
+```
   python -m venv venv
   venv\Scripts\activate      (Windows)
   pip install -r requirements.txt
-  ```
+```
 - Shared repo: push this folder to GitHub, everyone clones and works from there.
 
 **Errors encountered:**
 - On Windows, `venv\Scripts\activate` may fail with:
-  ```
+```
   cannot be loaded because running scripts is disabled on this system
-  ```
+```
   **Fix:** run once in terminal:
-  ```
+```
   Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
-  ```
+```
   then retry activation. `(venv)` should appear at the start of the terminal line once active.
 
-### ⬜ Step 2: Webcam + YOLOv8 Person Detection
-_Not started yet._
+### ✅ Step 2: Webcam + YOLOv8 Person Detection
+- File: `src/detection/yolo_detector.py`
+- Loaded pretrained `yolov8n.pt` model via `ultralytics`.
+- `detect_person(frame)` — runs detection filtered to `classes=[0]` (person only), returns the cropped person region (or `None` if no person found).
+- `run_webcam_loop()` — OpenCV webcam loop for standalone testing; shows full frame + person crop, press `q` to quit.
+- First run downloads `yolov8n.pt` automatically (needs internet once, then cached locally).
 
-### ⬜ Step 3: MediaPipe Pose Integration
-_Not started yet._
+### ✅ Step 3: MediaPipe Pose Integration
+- File: `src/pose/pose_estimator.py`
+- Loaded MediaPipe Pose solution (`mp.solutions.pose`).
+- `get_landmarks(person_crop)` — converts crop from BGR to RGB (OpenCV vs MediaPipe format difference), runs pose detection, returns 33 body landmarks (x, y, z, visibility) or `None` if no body detected.
+- `crop_regions(frame, landmarks)` — placeholder, not yet implemented. Will use landmark coordinates to cut out face / torso / feet regions for the classifiers in Step 5.
+
+**Errors encountered:**
+- Initial draft called `pose.process()` on an undefined variable at module level instead of inside the function — fixed by moving the call inside `get_landmarks()` using the `person_crop` parameter.
 
 ### ⬜ Step 4: Dataset Collection & Labeling
 _Not started yet. (Start early — takes the most time, run in parallel with Steps 1-3.)_
@@ -95,3 +105,7 @@ _Not started yet. (Target 15-20 FPS, test different lighting/backgrounds, handle
 - **Git/GitHub:** Tool for sharing/tracking code across the team.
 - **Virtual Environment:** Isolated "box" holding only this project's packages.
 - **FPS:** Frames processed per second — measure of real-time speed.
+
+## Milestones
+- 23/09/26 | 9:39 — `ultralytics`, `mediapipe` installed
+- 29/09/26 — Step 2 (YOLOv8 detection) and Step 3 (MediaPipe landmarks) implemented
